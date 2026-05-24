@@ -7,11 +7,15 @@ from kafka import KafkaProducer
 def initialize_gee():
     """Initializes the Google Earth Engine API."""
     try:
+        # Try to initialize normally first
         ee.Initialize(project='jolayemi-momoh')
-        print("Earth Engine sucessfully initialized")
+        print("Earth Engine successfully initialized.")
     except Exception as e:
-        print(f"initialization failed. Ensure you have authenticated: {e}")
-        raise
+        print("\nLocal credentials not found. Triggering Python authentication...")
+        # Force the Python library to request and save the token itself
+        ee.Authenticate(auth_mode='notebook')
+        ee.Initialize(project='jolayemi-momoh')
+        print("Earth Engine successfully initialized.")
 def get_agricultural_payload(coordinates, start_date, end_date):
     """
     Fetches agricultural data from Sentinel-2 for specified region and timeframe
